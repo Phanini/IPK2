@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#define HAVE_REMOTE
 #include <pcap.h>
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h> //for optarg in getopt
+#include <ctype.h>
 
 #define HAVE_REMOTE
 
@@ -48,19 +50,57 @@ int main(int argc, char* argv[]) {
         switch (opt) {
             case 'i':
                 strcpy(interface_buffer, optarg);
+                printf("-i %s GIVEN\n", interface_buffer);
                 break;
             case 'p':
+                printf("p: %s\n", port_buffer);
                 strcpy(port_buffer, optarg);
                 break;
             case 't':
+                printf("t given\n");
                 TCPFlag = true;
                 break;
             case 'u':
+                printf("u given\n");
                 UDPFlag = true;
                 break;
             case 'n':
+                printf("n: given\n");
                 number_of_packets = atoi(optarg);
                 break;
         }
     }
+    list_interfaces();
+}
+
+void list_interfaces() {
+    pcap_if_t *alldevs;
+    pcap_if_t *d;
+    int i=0;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    
+    // Retrieve the device list from the local machine
+    if (pcap_findalldevs(&alldevs, errbuf) == -1) {
+        fprintf(stderr,"Error in pcap_findalldevs: %s\n", errbuf);
+        exit(1);
+    }
+    
+    //Print the list
+    for(d= alldevs; d != NULL; d= d->next)
+    {
+        printf("%d. %s", ++i, d->name);
+        if (d->description)
+            printf(" (%s)\n", d->description);
+        else
+            printf(" (No description available)\n");
+    }
+    
+    if (i == 0)
+    {
+        printf("\nNo interfaces found! Make sure WinPcap is installed.\n");
+        return;
+    }
+
+    // We don't need any more the device list. Free it
+    pcap_freealldevs(alldevs);
 }
