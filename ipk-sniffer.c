@@ -85,22 +85,21 @@ void list_interfaces() {
         exit(1);
     }
     
-    //Print the list
-    for(d= alldevs; d != NULL; d= d->next)
-    {
+    // Print the list
+    for(d= alldevs; d != NULL; d= d->next) {
         printf("%d. %s", ++i, d->name);
-        if (d->description)
+        if (d->description) {
             printf(" (%s)\n", d->description);
-        else
+        }
+        else {
             printf(" (No description available)\n");
+        }
     }
     
-    if (i == 0)
-    {
+    if (i == 0) {
         printf("\nNo interfaces found! Make sure WinPcap is installed.\n");
         return;
     }
-
-    // We don't need any more the device list. Free it
+    
     pcap_freealldevs(alldevs);
 }
