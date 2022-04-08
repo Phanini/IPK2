@@ -2,10 +2,11 @@
 #define IPK_SNIFFER_H
 
 #include <string>
+#include <vector>
 
 struct arguments {
     std::string interface = "all";
-    int port = -1;
+    int port = -1; // if port == -1, then scan ALL ports 
     bool tcp = false;
     bool udp = false;
     bool icmp = false;
@@ -13,8 +14,9 @@ struct arguments {
     int packet_number = 1;
 };
 
-const char *args_list[9] = {"-i", "-p", "-t", "--tcp", "-u", \
+std::vector<std::string> args_list = {"-i", "-p", "-t", "--tcp", "-u", \
                       "--udp", "--icmp", "--arp", "-n"};
 
 void list_all_interfaces();
+bool isMember(const std::string &value, const std::vector<std::string> &array);
 #endif
