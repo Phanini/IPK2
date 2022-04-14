@@ -1,10 +1,10 @@
 NAME=ipk-sniffer
-CC=gcc
+CC=g++
 CFLAGS=-Wall -Wextra -pedantic -lm -fcommon
 LFLAG=-lpcap
 
-run: ipk-sniffer.c
-	${CC} ${CFLAGS} ipk-sniffer.c -o ${NAME} ${LFLAG}
+run: ipk-sniffer.cpp
+	${CC} ${CFLAGS} ipk-sniffer.cpp -o ${NAME} ${LFLAG}
 
 .PHONY: clean
 clean:
@@ -12,4 +12,4 @@ clean:
 
 .PHONY: pack
 pack: 
-	zip xphanj00.zip ipk-sniffer.c Makefile README.md
+	zip xphanj00.zip ipk-sniffer.cpp Makefile README.md
