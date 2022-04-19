@@ -16,6 +16,7 @@ struct arguments {
 
 bool create_session(char *dev);
 arguments parse_args(arguments arg, int arg_c, char*arg_v[]);
+void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 
 std::vector<std::string> args_list = {"-i", "-p", "-t", "--tcp", "-u", \
                       "--udp", "--icmp", "--arp", "-n"};
