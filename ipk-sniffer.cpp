@@ -16,10 +16,20 @@ bool create_session(char *dev) {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
     struct bpf_program fp;
-    char filter_exp[] = "port 23";
+    char filter_exp[] = "port 443";
     bpf_u_int32 mask;
     bpf_u_int32 net;
+    struct pcap_pkthdr header;
+    const u_char *packet;
 
+    // Define the device 
+	/*dev = pcap_lookupdev(errbuf);
+	if (dev == NULL) {
+		fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
+		return false;
+	}*/
+
+    // Find properties of device 
     if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
         fprintf(stderr, "Can't get netmask for device %s\n", dev);
         net = 0;
@@ -31,15 +41,24 @@ bool create_session(char *dev) {
         fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
         return false;
     }
+    //cout << "pcap_open_live\n";
     if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
 	    fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(handle));
 	    return false;
     }
+    //cout << "pcap_compile\n";
     if (pcap_setfilter(handle, &fp) == -1) {
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
         return false;
     }
+    //cout << "pcap_setfilter\n";
 
+    /* Grab a packet */
+	packet = pcap_next(handle, &header);
+	/* Print its length */
+	printf("Jacked a packet with length of [%d]\n", header.len);
+	/* And close the session */
+	pcap_close(handle);
     cout << "Success creating session for interface: "<< dev << "\n";
 }
 
