@@ -17,8 +17,8 @@
 #include <netinet/ip.h>
 
 struct arguments {
-    char *interface = "";
-    char *port = ""; // if port == -1, then scan ALL ports 
+    char *interface = (char*)"";
+    char *port = (char*)""; // if port == -1, then scan ALL ports 
     bool tcp = false;
     bool udp = false;
     bool icmp = false;
