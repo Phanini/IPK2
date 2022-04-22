@@ -43,6 +43,30 @@ void print_payload(const u_char *payload, int len)
 return;
 }
 
+// DELETE LATER
+string format_timestamp(const timeval * timer) {
+    // format time as string:   YYYY-MM-DD\THH:MM:SS+offset
+    string timestamp;
+    char buf[50];
+
+    // get local time from packet timestamp
+    struct tm *timeptr = localtime(&timer->tv_sec);
+    // get date & time
+    strftime(buf, sizeof(buf)-1, "%FT%T", timeptr);
+    timestamp = buf;
+
+    // append decimal part of seconds
+    timestamp += '.' + to_string(timer->tv_usec).substr(0, 3);
+
+    // append timezone offset as +HH:MM
+    size_t len = strftime(buf, sizeof(buf)-1, "%z", timeptr);
+    if (len < 2) return timestamp;   // tz might be unavailable
+    timestamp += buf;
+    timestamp.insert(timestamp.length()-2, ":");
+
+    return timestamp;
+}
+
 // Creates a sniffing session
 bool create_session(arguments arg) {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -50,7 +74,6 @@ bool create_session(arguments arg) {
     struct bpf_program fp;
     bpf_u_int32 mask;
     bpf_u_int32 net;
-    struct pcap_pkthdr header;
     const u_char *packet;
 
     // Define the device 
@@ -73,7 +96,7 @@ bool create_session(arguments arg) {
         return false;
     }
     //cout << "pcap_open_live\n";
-    if (pcap_compile(handle, &fp, /*arg.port*/ "udp", 0, net) == -1) {
+    if (pcap_compile(handle, &fp, /*arg.port*/ "udp or tcp", 0, net) == -1) {
 	    fprintf(stderr, "Couldn't parse filter %s: %s\n", /*arg.port*/ "udp", pcap_geterr(handle));
 	    return false;
     }
@@ -94,9 +117,11 @@ bool create_session(arguments arg) {
     pcap_freecode(&fp);
     pcap_close(handle);
     cout << "Success creating session for interface: "<< arg.interface << "\n";
+	return true;
 }
 
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
+	struct pcap_pkthdr header;
     static int count = 1;                   /* packet counter */
 
 	/* declare pointers to packet headers */
@@ -111,6 +136,9 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
 	printf("\nPacket number %d:\n", count);
 	count++;
+
+	// DELETE STOLEN CODE LATER
+	//cout << format_timestamp(&header.ts) << "\n";
 
 	/* define ethernet header */
 	ethernet = (struct sniff_ethernet*)(packet);
@@ -134,7 +162,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 			break;
 		case IPPROTO_UDP:
 			printf("   Protocol: UDP\n");
-			return;
+			return; 
 		case IPPROTO_ICMP:
 			printf("   Protocol: ICMP\n");
 			return;
@@ -331,6 +359,8 @@ arguments parse_args(arguments arg, int arg_c, char* arg_v[]) {
 void print_arg_struct(arguments argdata) {
     cout << argdata.port << "\n ";
 }
+
+
 
 int main(int argc, char* argv[]) {
     arguments arg;
