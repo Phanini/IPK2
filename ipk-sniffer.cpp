@@ -4,7 +4,7 @@ using namespace std;
 
 void print_payload(const u_char *payload, int len)
 {
-
+	
 	int len_rem = len;
 	int line_width = 16;			/* number of bytes per line */
 	int line_len;
@@ -43,7 +43,7 @@ void print_payload(const u_char *payload, int len)
 return;
 }
 
-// DELETE LATER
+// modify LATER
 string format_timestamp(const timeval * timer) {
     // format time as string:   YYYY-MM-DD\THH:MM:SS+offset
     string timestamp;
@@ -121,7 +121,7 @@ bool create_session(arguments arg) {
 }
 
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
-	struct pcap_pkthdr header;
+	//struct pcap_pkthdr header;
     static int count = 1;                   /* packet counter */
 
 	/* declare pointers to packet headers */
@@ -138,10 +138,13 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 	count++;
 
 	// DELETE STOLEN CODE LATER
-	//cout << format_timestamp(&header.ts) << "\n";
+	cout << "timestamp: " << format_timestamp(&header->ts) << "\n";
 
 	/* define ethernet header */
 	ethernet = (struct sniff_ethernet*)(packet);
+
+	cout << "src MAC: " << ethernet->ether_shost << "\n";
+    cout << "dst MAC: " << ethernet->ether_dhost << "\n";
 
 	/* define/compute ip header offset */
 	ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
@@ -150,11 +153,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 		printf("   * Invalid IP header length: %u bytes\n", size_ip);
 		return;
 	}
-
-	/* print source and destination IP addresses */
-	printf("       From: %s\n", inet_ntoa(ip->ip_src));
-	printf("         To: %s\n", inet_ntoa(ip->ip_dst));
-
+	
 	/* determine protocol */
 	switch(ip->ip_p) {
 		case IPPROTO_TCP:
@@ -165,12 +164,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 			return; 
 		case IPPROTO_ICMP:
 			printf("   Protocol: ICMP\n");
-			return;
-		case IPPROTO_IP:
-			printf("   Protocol: IP\n");
-			return;
-		default:
-			printf("   Protocol: unknown\n");
 			return;
 	}
 
@@ -186,9 +179,12 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 		return;
 	}
 
-	printf("   Src port: %d\n", ntohs(tcp->th_sport));
-	printf("   Dst port: %d\n", ntohs(tcp->th_dport));
+	/* print source and destination IP addresses */
+	printf("src IP: %s\n", inet_ntoa(ip->ip_src));
+	printf("dst IP: %s\n", inet_ntoa(ip->ip_dst));
 
+	printf("src port: %d\n", ntohs(tcp->th_sport));
+	printf("dst port: %d\n", ntohs(tcp->th_dport));
 	/* define/compute tcp payload (segment) offset */
 	payload = (const u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
 
@@ -199,17 +195,16 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 	 * Print payload data; it might be binary, so don't just
 	 * treat it as a string.
 	 */
-	if (size_payload > 0) {
-		printf("   Payload (%d bytes):\n", size_payload);
-		print_payload(payload, size_payload);
-	}
+	
+	printf("frame length: %d bytes\n", size_payload);
+	print_payload(payload, size_payload);
+	
 
 return;
 }
 
 void print_hex_ascii_line(const u_char *payload, int len, int offset)
 {
-
 	int i;
 	int gap;
 	const u_char *ch;
@@ -359,8 +354,6 @@ arguments parse_args(arguments arg, int arg_c, char* arg_v[]) {
 void print_arg_struct(arguments argdata) {
     cout << argdata.port << "\n ";
 }
-
-
 
 int main(int argc, char* argv[]) {
     arguments arg;
