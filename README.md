@@ -4,7 +4,7 @@ Jakub Phan
 FIT VUT  
 2022
 
-# IPK 2 - Packet Sniffer
+# IPK 2 - Packet Sniffer (UNFINISHED)
 
 Second project of Computer Communications and Networks - Packet Sniffer
 
