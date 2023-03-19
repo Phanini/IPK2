@@ -1,7 +1,7 @@
 # Author
 
 Jakub Phan  
-FIT BUT  
+FIT VUT  
 2022
 
 # IPK 2 - Packet Sniffer
