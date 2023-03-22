@@ -30,9 +30,7 @@ where:
 Arguments can be in any order  
 
 # Example calls
-First list out your interfaces with:
-
-```./ipk-sniffer -i```
+First list out your interfaces with: ```./ipk-sniffer -i```
 
 Then proceed to call some of these examples:
 
