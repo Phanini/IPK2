@@ -12,7 +12,7 @@ Second project of Computer Communications and Networks - Packet Sniffer
 
 Make and implement a network analyzer in C/C++/C# that can catch and filter packets on given network interface.
 
-## How to call program
+## Usage
 
 ```
 ./ipk-sniffer [-i rozhraní | --interface rozhraní] {-p ­­port} {[--tcp|-t] [--udp|-u] [--arp] [--icmp] } {-n num} 
@@ -28,3 +28,13 @@ where:
 - If the protocol is not specified, then all will be printed out
 - **-n 10** (sets number of packets to be shown, if nothing is given then only one packet is shown as of **-n 1**)  
 Arguments can be in any order  
+
+# Example calls
+First list out your interfaces with:
+**./ipk-sniffer -i
+Then proceed to call some of these examples:
+
+Shows 5 first packets from any interface:
+**./ipk-sniffer -i any -n 5
+Shows 3 udp packets from any interface:
+** ./ipk-sniffer -i any --udp -n 3
