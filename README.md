@@ -31,10 +31,14 @@ Arguments can be in any order
 
 # Example calls
 First list out your interfaces with:
-**./ipk-sniffer -i
+
+```./ipk-sniffer -i```
 Then proceed to call some of these examples:
 
 Shows 5 first packets from any interface:
-**./ipk-sniffer -i any -n 5
+
+```./ipk-sniffer -i any -n 5```
+
 Shows 3 udp packets from any interface:
-** ./ipk-sniffer -i any --udp -n 3
+
+```./ipk-sniffer -i any --udp -n 3```
